@@ -11,3 +11,100 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.AppContainer {
+  width: 100%;
+  height: 100vh;
+}
+
+.AppColor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  flex-direction: column;
+}
+
+.App {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.loading:after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  -webkit-animation: ellipsis steps(4, end) 1.4s infinite;
+  animation: ellipsis steps(4, end) 1.4s infinite;
+  content: '\2026'; /* ascii code for the ellipsis character */
+  width: 0px;
+}
+
+.loading {
+  width: 100%;
+}
+
+@keyframes ellipsis {
+  to {
+    width: 22px;
+  }
+}
+
+@-webkit-keyframes ellipsis {
+  to {
+    width: 22px;
+  }
+}
+
+.Cards {
+  display: flex;
+  gap: 16px;
+}
+
+.CardWhite {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #000;
+  height: 120px;
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.CardBlack {
+  background: #000;
+  color: #fff;
+  height: 120px;
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.Header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.NewGame {
+  white-space: nowrap;
+}
+
+.Controls {
+  display: flex;
+  gap: 10px;
+}
+
+.MobileControls {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
