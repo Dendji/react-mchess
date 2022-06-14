@@ -16,10 +16,13 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-scripts": "5.0.1",
+    "react-toastify": "^8.2.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
+    "upload": "scp -r ./build/* ubuntu@109.248.175.202:~/repos/chess-new-frontend",
+    "deploy": "yarn build && yarn upload",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

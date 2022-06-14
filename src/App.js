@@ -1,6 +1,7 @@
 import React from 'react'
 import ButtonBase from '@mui/material/ButtonBase'
 import Game from './Game'
+import { ToastContainer } from 'react-toastify'
 
 export default function App(props) {
   const [color, setColor] = React.useState(null)
@@ -11,6 +12,8 @@ export default function App(props) {
 
   return (
     <div className="AppContainer">
+      <ToastContainer />
+
       {color ? (
         <Game color={color} onNewGame={onNewGame} />
       ) : (
