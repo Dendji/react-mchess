@@ -24,9 +24,10 @@ export class message {
       type: 'error',
     })
   }
-  static success(msg) {
+  static success(msg, opts) {
     toast(msg, {
       ...options,
+      ...opts,
       type: 'success',
     })
   }

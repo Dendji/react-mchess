@@ -118,7 +118,7 @@ const Game = ({ color, onNewGame }) => {
   }
 
   const onUndo = async () => {
-    const res = await axios.get(`${API_ENDPOINT}/cancel_move`, {
+    const res = await axios.get(`${API_ENDPOINT}/cancel_one_move`, {
       params: {
         session_id: sessionId,
       },
@@ -132,7 +132,7 @@ const Game = ({ color, onNewGame }) => {
     if (game_end) {
       setEndGame(game_end)
     }
-    setFen(board)
+    setFen(board + ' 0 1')
   }
 
   const onBestMove = async () => {
@@ -146,20 +146,20 @@ const Game = ({ color, onNewGame }) => {
     const from = best_move.slice(0, 2)
     const to = best_move.slice(2, 4)
 
-    handleMove({
-      from,
-      to,
-      promotion: 'q',
-    })
+    // handleMove({
+    //   from,
+    //   to,
+    //   promotion: 'q',
+    // })
 
-    message.success('Ход применен')
+    message.success(`Лучший ход: ${from} ➞ ${to}`, {})
   }
 
   const controls = (
     <div className="Controls">
-      {/* <Button variant="outlined" onClick={onUndo} className="NewGame">
+      <Button variant="outlined" onClick={onUndo} className="NewGame">
         Отменить ход
-      </Button> */}
+      </Button>
       <Button variant="outlined" onClick={onBestMove} className="NewGame">
         Лучший ход
       </Button>

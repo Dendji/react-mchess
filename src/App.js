@@ -7,10 +7,10 @@ import classnames from 'classnames'
 
 const right = 'mendeleevchess'
 export default function App(props) {
-  const [color, setColor] = React.useState(null)
-  const [p, setP] = React.useState('')
-  // const [color, setColor] = React.useState('white')
-  // const [p, setP] = React.useState('mendeleevchess')
+  // const [color, setColor] = React.useState(null)
+  // const [p, setP] = React.useState('')
+  const [color, setColor] = React.useState('white')
+  const [p, setP] = React.useState('mendeleevchess')
 
   const onNewGame = () => {
     setColor(null)
