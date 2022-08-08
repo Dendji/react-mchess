@@ -13,19 +13,26 @@
     "axios": "^0.26.1",
     "chess.js": "^0.13.1",
     "chessboardjsx": "^2.4.7",
+    "classnames": "^2.3.1",
+    "customize-cra": "^1.0.0",
     "react": "^18.0.0",
+    "react-app-rewired": "^2.2.1",
     "react-dom": "^18.0.0",
     "react-scripts": "5.0.1",
     "react-toastify": "^8.2.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "upload": "scp -r ./build/* ubuntu@109.248.175.202:~/repos/chess-new-frontend",
+    "upload:s3": "aws s3 cp build s3://mendeleevchess.dbrain.io --recursive",
+    "deploy:s3": "yarn build && yarn upload:s3",
+    "invalidate": "aws cloudfront create-invalidation --distribution-id E2C401WAHN1SMS --paths '/*'",
+    "start": "react-app-rewired start",
+    "upload": "scp -r ./build/* ubuntu@109.248.175.231:~/repos/chess-new-frontend",
+    "rsync": "rsync -a ./build ubuntu@109.248.175.231:~/repos/chess-new-frontend",
     "deploy": "yarn build && yarn upload",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": [

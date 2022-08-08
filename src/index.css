@@ -108,3 +108,7 @@ code {
   display: flex;
   justify-content: center;
 }
+
+.transparent {
+  opacity: 50%;
+}

@@ -7,13 +7,16 @@ import Button from '@mui/material/Button'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { message } from './utils/toast'
 
-const API_ENDPOINT = `http://109.248.175.231:5000/api`
+// const API_ENDPOINT = `http://109.248.175.231:5000/api`
+const API_ENDPOINT = `https://mchess-api.dbrain.io/api`
 
 const Game = ({ color, onNewGame }) => {
   const matchesDesktop = useMediaQuery('(min-width:600px)')
 
-  const [fen, setFen] = useState(null)
+  const [fen, setFen] = useState(new Chess().fen())
   const [isMoving, setMoving] = useState(false)
+  const [currentMoveColor, setCurrentMoveColor] = useState('white')
+  const [isLoading, setLoading] = useState(true)
   const [checkmate, setCheckmate] = useState(false)
   const [endGame, setEndGame] = useState(false)
   const [hoveredSquare, setHoveredSquare] = useState(null)
@@ -31,10 +34,21 @@ const Game = ({ color, onNewGame }) => {
 
   React.useEffect(() => {
     const init = async () => {
-      const res = await axios.get(`${API_ENDPOINT}/init_${color}`)
-      const { data } = res
-      setFen(data.board)
-      setSessionId(data.session_id)
+      try {
+        const res = await axios.get(`${API_ENDPOINT}/init_white`)
+        const { data } = res
+        if (data.error) {
+          message.error(`Произошла ошибка при init. Статус: ${data.error}`)
+        }
+        setFen(data.board + ' 0 1')
+        setSessionId(data.session_id)
+        setLoading(false)
+      } catch (error) {
+        message.error(
+          `Произошла ошибка при init. Статус: ${JSON.stringify(error)}`,
+        )
+        setLoading(false)
+      }
     }
     init()
 
@@ -62,15 +76,15 @@ const Game = ({ color, onNewGame }) => {
   }, [sessionId])
 
   const handleMove = async (move) => {
-    const chess = new Chess(fen + ' 0 1')
+    // const chess = new Chess(fen + ' 0 1')
+    const chess = new Chess(fen)
     const mv = chess.move(move)
 
     if (mv) {
       setMoving(true)
       setFen(chess.fen())
       const moveParam = `${mv.from}${mv.to}${mv.promotion ? mv.promotion : ''}`
-
-      const res = await axios.get(`${API_ENDPOINT}`, {
+      const res = await axios.get(`${API_ENDPOINT}/move_no_pc`, {
         params: {
           move: moveParam,
           session_id: sessionId,
@@ -84,7 +98,8 @@ const Game = ({ color, onNewGame }) => {
       if (game_end) {
         setEndGame(game_end)
       }
-      setFen(newBoard)
+      setCurrentMoveColor(currentMoveColor === 'white' ? 'black' : 'white')
+      setFen(newBoard + ' 0 1')
       setMoving(false)
     }
   }
@@ -95,10 +110,10 @@ const Game = ({ color, onNewGame }) => {
 
     return isMoving ? (
       <h2 className="loading">
-        {color === 'black' ? 'Белые' : 'Черные'} ходят
+        {currentMoveColor === 'white' ? 'Белые' : 'Черные'} ходят
       </h2>
     ) : (
-      <h2>Ход {color === 'black' ? 'черных' : 'белых'}</h2>
+      <h2>Ход {currentMoveColor === 'black' ? 'черных' : 'белых'}</h2>
     )
   }
 
@@ -120,10 +135,33 @@ const Game = ({ color, onNewGame }) => {
     setFen(board)
   }
 
+  const onBestMove = async () => {
+    const res = await axios.get(`${API_ENDPOINT}/best_move`, {
+      params: {
+        session_id: sessionId,
+      },
+    })
+    const { data } = res
+    const { best_move } = data
+    const from = best_move.slice(0, 2)
+    const to = best_move.slice(2, 4)
+
+    handleMove({
+      from,
+      to,
+      promotion: 'q',
+    })
+
+    message.success('Ход применен')
+  }
+
   const controls = (
     <div className="Controls">
-      <Button variant="outlined" onClick={onUndo} className="NewGame">
+      {/* <Button variant="outlined" onClick={onUndo} className="NewGame">
         Отменить ход
+      </Button> */}
+      <Button variant="outlined" onClick={onBestMove} className="NewGame">
+        Лучший ход
       </Button>
       <Button variant="outlined" onClick={onNewGame} className="NewGame">
         Новая игра
@@ -133,7 +171,8 @@ const Game = ({ color, onNewGame }) => {
 
   const onSquareClick = async (square) => {
     if (isMoving) return
-    const chess = new Chess(fen + ' 0 1')
+    const chess = new Chess(fen)
+    // const chess = new Chess(fen + ' 0 1')
 
     setPieceSquare(square)
 
@@ -151,7 +190,7 @@ const Game = ({ color, onNewGame }) => {
       setFen(chess.fen())
       const moveParam = `${mv.from}${mv.to}${mv.promotion ? mv.promotion : ''}`
 
-      const res = await axios.get(`${API_ENDPOINT}`, {
+      const res = await axios.get(`${API_ENDPOINT}/move_no_pc`, {
         params: {
           move: moveParam,
           session_id: sessionId,
@@ -166,7 +205,8 @@ const Game = ({ color, onNewGame }) => {
         setEndGame(game_end)
       }
 
-      setFen(newBoard)
+      setCurrentMoveColor(currentMoveColor === 'white' ? 'black' : 'white')
+      setFen(newBoard + ' 0 1')
       setMoving(false)
     }
   }
@@ -182,7 +222,7 @@ const Game = ({ color, onNewGame }) => {
           <Chessboard
             onDragOverSquare={onDragOverSquare}
             dropSquareStyle={dropSquareStyle}
-            draggable={!isMoving && !endGame}
+            draggable={!isMoving && !endGame && !isLoading}
             position={fen}
             calcWidth={({ screenWidth, screenHeight }) =>
               screenWidth > screenHeight
